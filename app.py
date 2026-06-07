@@ -4,7 +4,7 @@ import streamlit.components.v1 as components
 # Set konfigurasi halaman agar penuh (Wide Mode)
 st.set_page_config(page_title="Kalkulator Laplace RLC", layout="wide")
 
-# Kode HTML + JS baru dengan tambahan "By Syafiq" di bagian header
+# Kode HTML + JS yang sudah diperbaiki total dan ditambahkan nama Syafiq
 html_code = """
 <!DOCTYPE html>
 <html lang="id">
@@ -40,13 +40,13 @@ html_code = """
   .header h1 { font-size: 1.3rem; font-weight: bold; color: #93c5fd; letter-spacing: 1px; }
   .header p { font-size: 0.75rem; color: #6b7db3; margin-top: 2px; }
   .author-badge {
-    margin-top: 4px;
+    margin-top: 6px;
     display: inline-block;
     font-size: 0.75rem;
     color: #34d399;
     background: rgba(52, 211, 153, 0.1);
     border: 1px solid rgba(52, 211, 153, 0.3);
-    padding: 2px 8px;
+    padding: 3px 10px;
     border-radius: 4px;
     font-weight: bold;
     letter-spacing: 0.5px;
@@ -172,91 +172,4 @@ html_code = """
   .step-formula {
     font-size: 0.8rem; color: #a78bfa;
     background: #0a0e1a; border: 1px solid #1e2d52;
-    border-radius: 4px; padding: 6px 10px; margin-top: 4px;
-    word-break: break-all;
-  }
-  .chart-container { background: #0d1324; border: 1px solid #1e2d52; border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem; }
-  .chart-container h3 { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: #4a5a8a; margin-bottom: 1rem; }
-  canvas { width: 100% !important; }
-  .table-panel { background: #0d1324; border: 1px solid #1e2d52; border-radius: 8px; padding: 1.25rem; }
-  .table-panel h3 { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: #4a5a8a; margin-bottom: 1rem; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-  th {
-    text-align: left; padding: 6px 10px;
-    background: #111827; color: #6b7db3;
-    border-bottom: 1px solid #1e2d52;
-    font-weight: normal; font-size: 0.7rem; letter-spacing: 1px;
-  }
-  td { padding: 6px 10px; border-bottom: 1px solid #111827; color: #e0e8ff; }
-  tr:hover td { background: #111827; }
-  .empty-state { text-align: center; padding: 3rem; color: #4a5a8a; font-size: 0.85rem; }
-  .empty-state .big { font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.4; }
-  .badge-RL { color: #34d399; }
-  .badge-RC { color: #f472b6; }
-  .badge-RLC { color: #fbbf24; }
-  @media (max-width: 700px) {
-    .main { grid-template-columns: 1fr; }
-    .results-grid { grid-template-columns: 1fr; }
-  }
-</style>
-</head>
-<body>
-<div class="header">
-  <div class="header-icon">⚡</div>
-  <div>
-    <h1>TRANSFORMASI LAPLACE — RANGKAIAN LISTRIK SERI</h1>
-    <p>Analisis Rangkaian RL · RC · RLC | Berbasis Hukum Kirchhoff II</p>
-    <div class="author-badge">⚙️ Created by Syafiq</div>
-  </div>
-</div>
-<div class="main">
-  <div class="sidebar">
-    <div class="section-label">Tipe Rangkaian</div>
-    <div class="circuit-tabs">
-      <button class="tab-btn active" onclick="setCircuit('RL')">RL</button>
-      <button class="tab-btn" onclick="setCircuit('RC')">RC</button>
-      <button class="tab-btn" onclick="setCircuit('RLC')">RLC</button>
-    </div>
-    <div class="section-label">Parameter Komponen</div>
-    <div class="param-group">
-      <div class="param-label">Resistor (R) <span id="r-val">500</span></div>
-      <input type="number" id="inp-R" value="500" step="1" min="0.001" oninput="document.getElementById('r-val').textContent=this.value">
-      <span class="unit-badge">Ohm (Ω)</span>
-    </div>
-    <div class="param-group" id="grp-L">
-      <div class="param-label">Induktor (L) <span id="l-val">27</span></div>
-      <input type="number" id="inp-L" value="27" step="0.1" min="0.001" oninput="document.getElementById('l-val').textContent=this.value">
-      <span class="unit-badge">Henry (H)</span>
-    </div>
-    <div class="param-group" id="grp-C" style="display:none;">
-      <div class="param-label">Kapasitor (C) <span id="c-val">0.0012</span></div>
-      <input type="number" id="inp-C" value="0.0012" step="0.0001" min="0.000001" oninput="document.getElementById('c-val').textContent=this.value">
-      <span class="unit-badge">Farad (F)</span>
-    </div>
-    <div class="param-group">
-      <div class="param-label">Tegangan DC (V) <span id="v-val">20</span></div>
-      <input type="number" id="inp-V" value="20" step="1" min="0.001" oninput="document.getElementById('v-val').textContent=this.value">
-      <span class="unit-badge">Volt (V)</span>
-    </div>
-    <div class="section-label">Rentang Waktu Simulasi</div>
-    <div class="param-group">
-      <div class="param-label">t maks <span id="tmax-val">100</span></div>
-      <input type="number" id="inp-tmax" value="100" step="1" min="1" oninput="document.getElementById('tmax-val').textContent=this.value">
-      <span class="unit-badge">detik (s)</span>
-    </div>
-    <button class="calc-btn" onclick="calculate()">▶  HITUNG &amp; SIMULASI</button>
-    <button class="reset-btn" onclick="resetDefaults()">↺  Reset ke Default (Paper)</button>
-  </div>
-  <div class="content" id="content">
-    <div class="empty-state">
-      <div class="big">⚡</div>
-      <p>Pilih tipe rangkaian, masukkan nilai parameter,<br>lalu tekan <strong>HITUNG &amp; SIMULASI</strong></p>
-    </div>
-  </div>
-</div>
-<script>
-let currentCircuit = 'RL';
-function setCircuit(type) {
-  currentCircuit = type;
-  document.querySelectorAll('.tab-btn').forEach((b, i) => {
-    b.classList.
+    border-radius: 4px; padding: 6px 10px; margin-top:
