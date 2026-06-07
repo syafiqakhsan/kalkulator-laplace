@@ -1,3 +1,11 @@
+import streamlit as st
+import streamlit.components.v1 as components
+
+# Mengatur konfigurasi halaman Streamlit agar memenuhi layar (Wide Mode)
+st.set_page_config(layout="wide", page_title="ROBOLINK-RLC Simulator")
+
+# Seluruh kode HTML dimasukkan ke dalam variabel string triple-quotes Python
+html_code = """
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -453,7 +461,6 @@
   }
 
   function calculate() {
-    // Author Credit Verification Point
     console.log("Robolink-RLC Engine Core running. Authorized by: Syafiq Akhsan");
 
     const R  = parseFloat(document.getElementById('inp-R').value);
@@ -461,19 +468,16 @@
     const C  = parseFloat(document.getElementById('inp-C').value);
     const V  = parseFloat(document.getElementById('inp-V').value);
 
-    // Core RLC parameters
     const omega0 = 1 / Math.sqrt(L * C);
     const f0     = omega0 / (2 * Math.PI);
     const alpha  = R / (2 * L);
     const zeta   = R / (2 * Math.sqrt(L / C));
     const tau    = 1 / alpha;
 
-    // Update metric cards
     document.getElementById('m-f0').textContent   = f0 < 1 ? f0.toFixed(4) : f0.toFixed(3);
     document.getElementById('m-zeta').textContent = zeta.toFixed(4);
     document.getElementById('m-tau').textContent  = tau.toFixed(4);
 
-    // Build time array
     const N    = 350;
     const Tmax = Math.min(tau * 10, 30);
     const tArr = Array.from({ length: N }, (_, i) => i * Tmax / (N - 1));
@@ -481,7 +485,6 @@
     let iArr = [], formula = '', modeTxt = '', modeClass = '', charItems = [];
 
     if (zeta > 1) {
-      // ---- OVERDAMPED ----
       const sd = Math.sqrt(alpha * alpha - omega0 * omega0);
       const s1 = -alpha + sd;
       const s2 = -alpha - sd;
@@ -498,7 +501,6 @@
         { ico: '●', txt: `ζ = ${zeta.toFixed(4)}  (ζ > 1)`, color: '#ffaa00' },
       ];
     } else if (zeta < 1) {
-      // ---- UNDERDAMPED ----
       const wd = omega0 * Math.sqrt(1 - zeta * zeta);
       const A  = V / (L * wd);
       iArr     = tArr.map(t => A * Math.exp(-alpha * t) * Math.sin(wd * t));
@@ -512,7 +514,6 @@
         { ico: '●', txt: `ζ = ${zeta.toFixed(4)}  (ζ < 1)`, color: '#00aaff' },
       ];
     } else {
-      // ---- CRITICALLY DAMPED ----
       const A = V / L;
       iArr    = tArr.map(t => A * t * Math.exp(-alpha * t));
       formula = `i(t) = ${A.toFixed(5)}·t·e^(−${alpha.toFixed(3)}t)  A`;
@@ -526,22 +527,18 @@
       ];
     }
 
-    // Peak current
     const ipeak = Math.max(...iArr.map(Math.abs));
     document.getElementById('m-ipeak').textContent = ipeak.toFixed(5);
 
-    // Formula output
     document.getElementById('f-eq').textContent  = formula;
     document.getElementById('f-sub').innerHTML   =
       `ω₀ = ${omega0.toFixed(4)} rad/s &nbsp;|&nbsp; α = ${alpha.toFixed(4)} &nbsp;|&nbsp; ζ = ${zeta.toFixed(4)}<br>` +
       `s₁,₂ = −α ± √(α²−ω₀²) &nbsp;|&nbsp; τ = ${tau.toFixed(4)} s`;
 
-    // Mode badge
     const badge = document.getElementById('mode-badge');
     badge.textContent = modeTxt;
     badge.className   = 'mode-badge ' + modeClass;
 
-    // Characteristics
     document.getElementById('char-list').innerHTML = charItems.map(c =>
       `<div class="char-item">
         <span class="char-ico" style="color:${c.color}">${c.ico}</span>
@@ -549,7 +546,6 @@
        </div>`
     ).join('');
 
-    // Signal quality bars
     const snr        = Math.min(100, Math.max(5, (1 - Math.min(zeta, 3) / 3) * 100));
     const stability  = zeta <= 1 ? Math.min(100, zeta * 100) : Math.max(5, 100 - (zeta - 1) * 40);
     const bandwidth  = Math.min(100, (f0 / 10) * 100);
@@ -560,7 +556,6 @@
       barHtml('BANDWIDTH',  bandwidth,  '#ffaa00') +
       barHtml('EFFICIENCY', efficiency, '#ff44aa');
 
-    // Robot status
     const rdot = document.getElementById('r-dot');
     const rmsg = document.getElementById('r-msg');
     const sdot = document.getElementById('sys-dot');
@@ -578,7 +573,6 @@
       sdot.className = 'dot';
     }
 
-    // Chart color by mode
     const cLine = zeta > 1 ? '#ffaa00' : zeta < 1 ? '#00aaff' : '#ff44aa';
     const cFill = zeta > 1 ? 'rgba(255,170,0,0.10)' : zeta < 1 ? 'rgba(0,170,255,0.10)' : 'rgba(255,68,170,0.10)';
 
@@ -627,9 +621,11 @@
     });
   }
 
-  // Run on load with default values
   calculate();
 </script>
-
 </body>
 </html>
+"""
+
+# Render komponen HTML dengan tinggi proporsional (misal: 800px atau menyesuaikan app)
+components.html(html_code, height=750, scrolling=True)
