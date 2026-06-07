@@ -39,12 +39,32 @@ html_code = """
   }
   .header h1 { font-size: 1.3rem; font-weight: bold; color: #93c5fd; letter-spacing: 1px; }
   .header p { font-size: 0.75rem; color: #6b7db3; margin-top: 2px; }
+  .header .author { font-size: 0.75rem; color: #fbbf24; font-weight: bold; margin-top: 4px; }
   .main { display: grid; grid-template-columns: 320px 1fr; gap: 0; min-height: calc(100vh - 80px); }
   .sidebar {
     background: #0d1324;
     border-right: 1px solid #1e2d52;
     padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     overflow-y: auto;
+  }
+  .sidebar-content {
+    flex-grow: 1;
+  }
+  .sidebar-footer {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #1e2d52;
+    font-size: 0.7rem;
+    color: #4a5a8a;
+    text-align: center;
+    letter-spacing: 1px;
+  }
+  .sidebar-footer span {
+    color: #fbbf24;
+    font-weight: bold;
   }
   .section-label {
     font-size: 0.65rem;
@@ -194,45 +214,51 @@ html_code = """
   <div>
     <h1>TRANSFORMASI LAPLACE — RANGKAIAN LISTRIK SERI</h1>
     <p>Analisis Rangkaian RL · RC · RLC | Berbasis Hukum Kirchhoff II</p>
+    <div class="author">by.syafiq</div>
   </div>
 </div>
 <div class="main">
   <div class="sidebar">
-    <div class="section-label">Tipe Rangkaian</div>
-    <div class="circuit-tabs">
-      <button class="tab-btn active" onclick="setCircuit('RL')">RL</button>
-      <button class="tab-btn" onclick="setCircuit('RC')">RC</button>
-      <button class="tab-btn" onclick="setCircuit('RLC')">RLC</button>
+    <div class="sidebar-content">
+      <div class="section-label">Tipe Rangkaian</div>
+      <div class="circuit-tabs">
+        <button class="tab-btn active" onclick="setCircuit('RL')">RL</button>
+        <button class="tab-btn" onclick="setCircuit('RC')">RC</button>
+        <button class="tab-btn" onclick="setCircuit('RLC')">RLC</button>
+      </div>
+      <div class="section-label">Parameter Komponen</div>
+      <div class="param-group">
+        <div class="param-label">Resistor (R) <span id="r-val">500</span></div>
+        <input type="number" id="inp-R" value="500" step="1" min="0.001" oninput="document.getElementById('r-val').textContent=this.value">
+        <span class="unit-badge">Ohm (Ω)</span>
+      </div>
+      <div class="param-group" id="grp-L">
+        <div class="param-label">Induktor (L) <span id="l-val">27</span></div>
+        <input type="number" id="inp-L" value="27" step="0.1" min="0.001" oninput="document.getElementById('l-val').textContent=this.value">
+        <span class="unit-badge">Henry (H)</span>
+      </div>
+      <div class="param-group" id="grp-C" style="display:none;">
+        <div class="param-label">Kapasitor (C) <span id="c-val">0.0012</span></div>
+        <input type="number" id="inp-C" value="0.0012" step="0.0001" min="0.000001" oninput="document.getElementById('c-val').textContent=this.value">
+        <span class="unit-badge">Farad (F)</span>
+      </div>
+      <div class="param-group">
+        <div class="param-label">Tegangan DC (V) <span id="v-val">20</span></div>
+        <input type="number" id="inp-V" value="20" step="1" min="0.001" oninput="document.getElementById('v-val').textContent=this.value">
+        <span class="unit-badge">Volt (V)</span>
+      </div>
+      <div class="section-label">Rentang Waktu Simulasi</div>
+      <div class="param-group">
+        <div class="param-label">t maks <span id="tmax-val">100</span></div>
+        <input type="number" id="inp-tmax" value="100" step="1" min="1" oninput="document.getElementById('tmax-val').textContent=this.value">
+        <span class="unit-badge">detik (s)</span>
+      </div>
+      <button class="calc-btn" onclick="calculate()">▶  HITUNG &amp; SIMULASI</button>
+      <button class="reset-btn" onclick="resetDefaults()">↺  Reset ke Default (Paper)</button>
     </div>
-    <div class="section-label">Parameter Komponen</div>
-    <div class="param-group">
-      <div class="param-label">Resistor (R) <span id="r-val">500</span></div>
-      <input type="number" id="inp-R" value="500" step="1" min="0.001" oninput="document.getElementById('r-val').textContent=this.value">
-      <span class="unit-badge">Ohm (Ω)</span>
+    <div class="sidebar-footer">
+      Developed <span>by.syafiq</span>
     </div>
-    <div class="param-group" id="grp-L">
-      <div class="param-label">Induktor (L) <span id="l-val">27</span></div>
-      <input type="number" id="inp-L" value="27" step="0.1" min="0.001" oninput="document.getElementById('l-val').textContent=this.value">
-      <span class="unit-badge">Henry (H)</span>
-    </div>
-    <div class="param-group" id="grp-C" style="display:none;">
-      <div class="param-label">Kapasitor (C) <span id="c-val">0.0012</span></div>
-      <input type="number" id="inp-C" value="0.0012" step="0.0001" min="0.000001" oninput="document.getElementById('c-val').textContent=this.value">
-      <span class="unit-badge">Farad (F)</span>
-    </div>
-    <div class="param-group">
-      <div class="param-label">Tegangan DC (V) <span id="v-val">20</span></div>
-      <input type="number" id="inp-V" value="20" step="1" min="0.001" oninput="document.getElementById('v-val').textContent=this.value">
-      <span class="unit-badge">Volt (V)</span>
-    </div>
-    <div class="section-label">Rentang Waktu Simulasi</div>
-    <div class="param-group">
-      <div class="param-label">t maks <span id="tmax-val">100</span></div>
-      <input type="number" id="inp-tmax" value="100" step="1" min="1" oninput="document.getElementById('tmax-val').textContent=this.value">
-      <span class="unit-badge">detik (s)</span>
-    </div>
-    <button class="calc-btn" onclick="calculate()">▶  HITUNG &amp; SIMULASI</button>
-    <button class="reset-btn" onclick="resetDefaults()">↺  Reset ke Default (Paper)</button>
   </div>
   <div class="content" id="content">
     <div class="empty-state">
@@ -432,5 +458,5 @@ function svgRLC(R, L, C, V) {
 </html>
 """
 
-# Di sini letak perbaikannya: scrolling=True (bukan scroller=True)
+# Scrolling=True untuk fleksibilitas komponen HTML internal
 components.html(html_code, height=1100, scrolling=True)
